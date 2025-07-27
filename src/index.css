@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root {
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+/* Aplica la fuente Montserrat a todo el contenido */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
