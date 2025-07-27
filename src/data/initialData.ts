@@ -1,4 +1,4 @@
-export const allCelulares = [
+export const allProductos = [
 	{
 		brand: 'Samsung',
 		colors: [{ color: '#000000', color_name: 'Negro' }],
@@ -386,7 +386,7 @@ export const allCelulares = [
 	},
 ];
 
-export const recentCelulares = [
+export const recentProductos = [
 	{
 		brand: 'Samsung',
 		colors: [{ color: '#000000', color_name: 'Negro' }],
@@ -529,7 +529,7 @@ export const recentCelulares = [
 	},
 ];
 
-export const popularCelulares = [
+export const popularProductos = [
 	{
 		brand: 'Huawei',
 		colors: [{ color: '#800080', color_name: 'Púrpura' }],

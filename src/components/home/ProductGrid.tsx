@@ -1,6 +1,9 @@
+import type { PreparedProducts } from "../../interfaces";
+import { CardProduct } from "../products/CardProduct";
+
 interface Props {
 	title: string;
-	products: any[];
+	products: PreparedProducts[];
 }
 
 export const ProductGrid = ({ title, products }: Props) => {
@@ -12,10 +15,17 @@ export const ProductGrid = ({ title, products }: Props) => {
 
 			<div className='grid grid-cols-1 gap-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4'>
 				{products.map(product => (
-					<div className="flex flex-col gap-6 relative" 
-                    key={product.id}>
-                        <h3>{product.title}</h3>
-                    </div>
+					<CardProduct
+						key={product.id}
+						img={product.images[0]}
+						name={product.name}
+						price={product.price}
+						slug={product.slug}
+						colors={product.colors}
+						variants={product.variants}
+					/>
+
+
 				))}
 			</div>
 		</div>

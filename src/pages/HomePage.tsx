@@ -1,8 +1,14 @@
+import { Categories } from '../components/home/Categories';
 import { FeatureGrid } from '../components/home/FeatureGrid';
 import { ProductGrid } from '../components/home/ProductGrid';
+import {popularProductos, recentProductos } from '../data/initialData';
+import { prepareProducts } from '../helpers';
 
 
 export const HomePage = () => {
+
+	const preparedRecentProducts = prepareProducts(recentProductos);
+	const preparedPopularProducts = prepareProducts(popularProductos);
 
 	return (
 		<div>
@@ -10,13 +16,16 @@ export const HomePage = () => {
 
 			<ProductGrid
 				title='Nuevos Productos'
-				products={[{ id:1, title: 'Producto 1' }, { id:2, title: 'Producto 2' }]} // Example products
+				products={preparedRecentProducts}
 			/>
 
 			<ProductGrid
 				title='Productos Destacados'
-				products={[{ id:1, title: 'Producto Destacado 1' }, { id:2, title: 'Producto Destacado 2' }]} // Example featured products
+				products={preparedPopularProducts}
 			/>
+
+			<Categories />
+
 		</div>
 	);
 };
