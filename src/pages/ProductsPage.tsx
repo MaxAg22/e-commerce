@@ -1,10 +1,25 @@
+import { useState } from 'react';
 import { CardProduct } from '../components/products/CardProduct';
 import { ContainerFilter } from '../components/products/ContainerFilter';
-import { allProductos } from '../data/initialData';
 import { prepareProducts } from '../helpers';
+import { usedFIlteredProducts } from '../hooks';
+import { Pagination } from '../components/shared/Pagination';
 
 export const ProductsPage = () => {
-	const preparedProducts = prepareProducts(allProductos);
+	const [page, setPage] = useState(1);
+	const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+
+	const {
+		data: products,
+		isLoading,
+		totalProducts,
+	} = usedFIlteredProducts({
+		page,
+		brands: selectedBrands,
+	});
+
+
+	const preparedProducts = prepareProducts(products ?? []);
 
 	return (
 		<>
@@ -14,25 +29,40 @@ export const ProductsPage = () => {
 
 			<div className='grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
 				{/* FILTROS */}
-				<ContainerFilter />
+				<ContainerFilter 
+					setSelectedBrands={setSelectedBrands}
+					selectedBrands={selectedBrands}
+				/>
+				{
+					isLoading ? (
+						<div className="col-span-2 flex items-center justify-center h-500[px]">
+							<p className="text-gray-500">Cargando productos...</p>
+						</div>
+					) : (
+						<div className='col-span-2 lg:col-span-2 xl:col-span-4 flex flex-col gap-12'>
+							<div className='grid grid-cols-2 gap-3 gap-y-10 xl:grid-cols-4'>
+								{preparedProducts.map(product => (
+									<CardProduct
+										key={product.id}
+										name={product.name}
+										price={product.price}
+										colors={product.colors}
+										img={product.images[0]}
+										slug={product.slug}
+										variants={product.variants}
+									/>
+								))}
+							</div>
 
-				<div className='col-span-2 lg:col-span-2 xl:col-span-4 flex flex-col gap-12'>
-					<div className='grid grid-cols-2 gap-3 gap-y-10 xl:grid-cols-4'>
-						{preparedProducts.map(product => (
-							<CardProduct
-								key={product.id}
-								name={product.name}
-								price={product.price}
-								colors={product.colors}
-								img={product.images[0]}
-								slug={product.slug}
-								variants={product.variants}
+							{/* TODO: Paginación */}
+							<Pagination
+								totalItems={totalProducts}
+								page={page}
+								setPage={setPage}
 							/>
-						))}
-					</div>
-
-					{/* TODO: Paginación */}
-				</div>
+						</div>
+					)
+				}
 			</div>
 		</>
 	);
