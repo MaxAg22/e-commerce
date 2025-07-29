@@ -4,6 +4,7 @@ import { ContainerFilter } from '../components/products/ContainerFilter';
 import { prepareProducts } from '../helpers';
 import { usedFIlteredProducts } from '../hooks';
 import { Pagination } from '../components/shared/Pagination';
+import { Loader } from '../components/shared/Loader';
 
 export const ProductsPage = () => {
 	const [page, setPage] = useState(1);
@@ -35,8 +36,8 @@ export const ProductsPage = () => {
 				/>
 				{
 					isLoading ? (
-						<div className="col-span-2 flex items-center justify-center h-500[px]">
-							<p className="text-gray-500">Cargando productos...</p>
+						<div className='col-span-2 lg:col-span-2 xl:col-span-4 flex justify-center items-center h-[80vh]'>
+							<Loader />
 						</div>
 					) : (
 						<div className='col-span-2 lg:col-span-2 xl:col-span-4 flex flex-col gap-12'>
