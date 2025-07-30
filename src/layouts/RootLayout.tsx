@@ -6,10 +6,16 @@ import { Navbar } from "../components/shared/Navbar";
 import { Footer } from "../components/shared/Footer";
 import { Banner } from "../components/home/Banner";
 import { Newsletter } from "../components/home/Newsletter";
+import { useGlobalStore } from "../store/global.store";
+import { Sheet } from "../components/shared/Sheet";
+import { NavbarMobile } from "../components/shared/NavBarMobile";
 
 export const RootLayout = () => {
 
     const { pathname } = useLocation();
+
+    const isSheetOpen = useGlobalStore(state => state.isSheetOpen);
+    const activeNavMobile = useGlobalStore(state => state.activeNavMobile);
 
     return (
         <div className="h-screen flex flex-col font-montserrat">
@@ -25,6 +31,10 @@ export const RootLayout = () => {
             {/* Solo muestra el newsletter en la ruta raíz */}
             {pathname === '/' && <Newsletter />}
 
+            {isSheetOpen && <Sheet />}
+
+            {activeNavMobile && <NavbarMobile />}
+            
             <Footer />
         </div>
     )

@@ -1,8 +1,12 @@
+/*
+	Aquí se define el componente ProductPage, que representa la página de un producto específico en la tienda.
+*/
+
 import { LuMinus, LuPlus } from 'react-icons/lu';
 import { Separator } from '../components/shared/Separator';
 import { formatPrice } from '../helpers';
 import { CiDeliveryTruck } from 'react-icons/ci';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BsChatLeftText } from 'react-icons/bs';
 import { ProductDescription } from '../components/one-product/ProductDescription';
 import { GridImages } from '../components/one-product/GridImages';
@@ -11,6 +15,9 @@ import { useEffect, useMemo, useState } from 'react';
 import type { VariantProduct } from '../interfaces';
 import { Tag } from '../components/shared/Tag';
 import { Loader } from '../components/shared/Loader';
+import { useCounterStore } from '../store/counter.store';
+import { useCartStore } from '../store/cart.store';
+import toast from 'react-hot-toast';
 
 interface Acc {
 	[key: string]: {
@@ -20,9 +27,13 @@ interface Acc {
 }
 
 export const ProductPage = () => {
+	// Obtenemos el slug del producto desde los parámetros de la URL (React Hook)
 	const { slug } = useParams<{ slug: string }>();
 
-	const { product, isLoading, isError } = useProduct(slug || '');
+	const [currentSlug, setCurrentSlug] = useState(slug);
+
+
+	const { product, isLoading, isError } = useProduct(currentSlug || '');
 
 	const [selectedColor, setSelectedColor] = useState<string | null>(
 		null
@@ -35,19 +46,32 @@ export const ProductPage = () => {
 	const [selectedVariant, setSelectedVariant] =
 		useState<VariantProduct | null>(null);
 
+
+
+	// Counter
+	const count = useCounterStore(state => (state.count));
+	const increment = useCounterStore(state => state.increment);
+	const decrement = useCounterStore(state => state.decrement);
+
+	const addItem = useCartStore(state => state.addItem);
+
+	const navigate = useNavigate();
+
+
 	// Agrupamos las variantes por color
 	const colors = useMemo(() => {
 		return (
 			product?.variants.reduce(
 				(acc: Acc, variant: VariantProduct) => {
 					const { color, color_name, storage } = variant;
+					// Si el color no existe en el acumulador, lo inicializamos
 					if (!acc[color]) {
 						acc[color] = {
 							name: color_name,
 							storages: [],
 						};
 					}
-
+					// Si el almacenamiento no está en la lista de almacenamientos del color, lo agregamos
 					if (!acc[color].storages.includes(storage)) {
 						acc[color].storages.push(storage);
 					}
@@ -57,9 +81,9 @@ export const ProductPage = () => {
 				{} as Acc
 			) || {}
 		);
-	}, [product?.variants]);
+	}, [product?.variants]); // Dependemos de las variantes del producto, si cambian, recalculamos
 
-	// Obtener el primer color predeterminado si no se ha seleccionado ninguno
+	// Cada vez que se cargan los colores, si no hay un color seleccionado, seleccionamos el primero
 	const availableColors = Object.keys(colors);
 	useEffect(() => {
 		if (!selectedColor && availableColors.length > 0) {
@@ -68,6 +92,7 @@ export const ProductPage = () => {
 	}, [availableColors, selectedColor]);
 
 	// Actualizar el almacenamiento seleccionado cuando cambia el color
+	// !selectedStorage significa que no hay un almacenamiento seleccionado
 	useEffect(() => {
 		if (selectedColor && colors[selectedColor] && !selectedStorage) {
 			setSelectedStorage(colors[selectedColor].storages[0]);
@@ -89,6 +114,53 @@ export const ProductPage = () => {
 
 	// Obtener el stock
 	const isOutOfStock = selectedVariant?.stock === 0;
+
+	// Función para agregar al carrito
+	const addToCart = () => {
+		if(selectedVariant) {
+			addItem({
+				variantId: selectedVariant.id,
+				productId: product?.id || '',
+				name: product?.name || '',
+				image: product?.images[0] || '',
+				color: selectedVariant.color_name || '',
+				storage: selectedVariant.storage || '',
+				price: selectedVariant.price,
+				quantity: count,
+			});
+			toast.success('Producto añadido al carrito', {
+				position: 'bottom-right',
+			});
+		}
+	};
+
+	// Función para comprar ahora
+	const buyNow = () => {
+		if(selectedVariant) {
+			addItem({
+				variantId: selectedVariant.id,
+				productId: product?.id || '',
+				name: product?.name || '',
+				image: product?.images[0] || '',
+				color: selectedVariant.color_name || '',
+				storage: selectedVariant.storage || '',
+				price: selectedVariant.price,
+				quantity: count,
+			});
+			navigate('/checkout');
+		}
+	};
+
+	// Actualizar el slug actual cuando cambia el slug de los parámetros
+	useEffect(() => {
+		setCurrentSlug(slug);
+
+		// Reiniciar el color, almacenamiento y variante seleccionados
+		setSelectedColor(null);
+		setSelectedStorage(null);
+		setSelectedVariant(null);
+	}, [slug]);
+
 
 	if (isLoading) return <Loader />;
 
@@ -199,11 +271,16 @@ export const ProductPage = () => {
 								<p className='text-sm font-medium'>Cantidad:</p>
 
 								<div className='flex gap-8 px-5 py-3 border border-slate-200 w-fit rounded-full'>
-									<button>
+									<button
+										onClick={decrement}
+										disabled={count === 1}
+									>
 										<LuMinus size={15} />
 									</button>
-									<span className='text-slate-500 text-sm'>1</span>
-									<button>
+									<span className='text-slate-500 text-sm'>{count}</span>
+									<button
+										onClick={increment}
+									>
 										<LuPlus size={15} />
 									</button>
 								</div>
@@ -211,10 +288,12 @@ export const ProductPage = () => {
 
 							{/* BOTONES ACCIÓN */}
 							<div className='flex flex-col gap-3'>
-								<button className='bg-[#f3f3f3] uppercase font-semibold tracking-widest text-xs py-4 rounded-full transition-all duration-300 hover:bg-[#e2e2e2]'>
+								<button className='bg-[#f3f3f3] uppercase font-semibold tracking-widest text-xs py-4 rounded-full transition-all duration-300 hover:bg-[#e2e2e2]'
+									onClick={addToCart}>
 									Agregar al carro
 								</button>
-								<button className='bg-black text-white uppercase font-semibold tracking-widest text-xs py-4 rounded-full'>
+								<button className='bg-black text-white uppercase font-semibold tracking-widest text-xs py-4 rounded-full'
+									onClick={buyNow}>
 									Comprar ahora
 								</button>
 							</div>
