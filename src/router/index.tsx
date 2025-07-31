@@ -1,6 +1,7 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout";
-import { HomePage, ProductsPage, AboutPage } from "../pages";
+import { ClientLayout } from "../layouts/ClientLayout";
+import { HomePage, ProductsPage, AboutPage, LoginPage, RegisterPage, OrdersUserPage, ConfirmEmailPage } from "../pages";
 import { ProductPage } from "../pages/ProductPage";
 
 
@@ -19,7 +20,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'productos',
-                element: <ProductsPage />
+                element: <ProductsPage />,
             },
             {
 				path: 'productos/:slug',
@@ -27,8 +28,34 @@ export const router = createBrowserRouter([
 			},
             {
                 path: 'nosotros',
-                element: <AboutPage />
+                element: <AboutPage />,
             },
+            {
+                path: 'login',
+                element: <LoginPage />,
+            },
+            {
+                path: 'registro',
+                element: <RegisterPage />,
+            },
+            {
+                path: 'registro-confirmar',
+                element: <ConfirmEmailPage />
+            },
+            {
+                path: 'account',
+                element: <ClientLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="pedidos" />,
+                    },
+                    {
+                        path: 'pedidos',
+                        element: <OrdersUserPage />,
+                    }
+                ]
+            }
         ]
     },
 ]);
