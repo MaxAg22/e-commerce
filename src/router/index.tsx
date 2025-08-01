@@ -1,7 +1,18 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout";
 import { ClientLayout } from "../layouts/ClientLayout";
-import { HomePage, ProductsPage, AboutPage, LoginPage, RegisterPage, OrdersUserPage, ConfirmEmailPage } from "../pages";
+import { 
+    HomePage, 
+    ProductsPage, 
+    AboutPage, 
+    LoginPage, 
+    RegisterPage, 
+    OrdersUserPage, 
+    ConfirmEmailPage, 
+    CheckoutPage, 
+    OrderUserPage, 
+    ThankyouPage 
+} from "../pages";
 import { ProductPage } from "../pages/ProductPage";
 
 
@@ -48,14 +59,26 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <Navigate to="pedidos" />,
+                        element: <Navigate to="account/pedidos" />,
                     },
                     {
                         path: 'pedidos',
                         element: <OrdersUserPage />,
+                    },
+                    {
+                        path: 'pedidos/:id',
+                        element: <OrderUserPage />,
                     }
                 ]
-            }
+            },
         ]
     },
+    {
+        path: '/checkout',
+        element: <CheckoutPage />,
+    },
+    {
+        path: '/checkout/:id/thank-you',
+        element: <ThankyouPage />,
+    }
 ]);

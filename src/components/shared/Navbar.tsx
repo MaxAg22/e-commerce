@@ -67,7 +67,7 @@ export const Navbar = () => {
 					) : session ? (
 						<div className='relative'>
 							<Link
-								to='/account'
+								to='/account/pedidos'
 								className='border-2 border-slate-700 w-9 h-9 rounded-full grid place-items-center text-lg font-bold'
 							>
 								R

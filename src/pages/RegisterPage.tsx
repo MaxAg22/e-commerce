@@ -1,29 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, Navigate } from 'react-router-dom';
-import { z } from 'zod';
 import { useRegister, useUser } from '../hooks';
 import { LuLoader } from 'react-icons/lu';
 import { Loader } from '../components/shared/Loader';
+import { userRegisterSchema, type UserRegisterFormValues } from '../lib/validators';
 
-// z.object proviene de la libreria zod, nos permite dar las propiedades a los campos del formulario
-export const userRegisterSchema = z.object({
-	email: z.email('El correo electrónico no es válido'),
-	password: z
-		.string()
-		.min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
-		.max(15, { message: "La contraseña no debe superar los 15 caracteres" })
-		.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, {
-			message:
-			"La contraseña debe contener al menos una letra minúscula, una mayúscula, un número y un símbolo",
-	}),
-	fullName: z.string().min(1, 'El nombre completo es requerido'),
-	phone: z.string().optional(),
-});
-
-export type UserRegisterFormValues = z.infer<
-	typeof userRegisterSchema
->;
 
 export const RegisterPage = () => {
 	const {
