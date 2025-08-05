@@ -13,7 +13,7 @@ export const useCreateOrder = () => {
 			queryClient.invalidateQueries({
 				queryKey: ['orders'],
 			});
-			navigate(`/checkout/${data.id}/thank-you`);
+			//navigate(`/checkout/${data.id}/thank-you`);
 		},
 		onError: error => {
 			toast.error(error.message, {

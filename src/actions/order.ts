@@ -73,6 +73,7 @@ export const createOrder = async (order: OrderInput) => {
 			address_id: addressData.id,
 			total_amount: order.totalAmount,
 			status: 'Pending',
+			payment_status: 'Pending'
 		})
 		.select()
 		.single();

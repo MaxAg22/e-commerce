@@ -46,7 +46,7 @@ export type Database = {
           city: string
           country: string
           created_at: string
-          cutomer_id: string | null
+          customer_id: string | null
           id: string
           postal_code: string | null
           state: string
@@ -57,7 +57,7 @@ export type Database = {
           city: string
           country?: string
           created_at?: string
-          cutomer_id?: string | null
+          customer_id?: string | null
           id?: string
           postal_code?: string | null
           state: string
@@ -68,7 +68,7 @@ export type Database = {
           city?: string
           country?: string
           created_at?: string
-          cutomer_id?: string | null
+          customer_id?: string | null
           id?: string
           postal_code?: string | null
           state?: string
@@ -76,7 +76,7 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "addresses_cutomer_id_fkey"
-            columns: ["cutomer_id"]
+            columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["id"]
@@ -158,6 +158,7 @@ export type Database = {
           created_at: string
           customer_id: string
           id: number
+          payment_status: string | null
           status: string
           total_amount: number
         }
@@ -166,6 +167,7 @@ export type Database = {
           created_at?: string
           customer_id: string
           id?: number
+          payment_status?: string | null
           status?: string
           total_amount: number
         }
@@ -174,6 +176,7 @@ export type Database = {
           created_at?: string
           customer_id?: string
           id?: number
+          payment_status?: string | null
           status?: string
           total_amount?: number
         }

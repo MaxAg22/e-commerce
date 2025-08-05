@@ -9,6 +9,9 @@ import { ItemsCheckout } from './ItemsCheckout';
 import { useCreateOrder } from '../../hooks';
 import { useCartStore } from '../../store/cart.store';
 import { ImSpinner2 } from 'react-icons/im';
+import { purchaseTicket } from '../../actions/purchaseTicket';
+import { Wallet } from '@mercadopago/sdk-react';
+import { useState } from 'react';
 
 export const FormCheckout = () => {
 	const {
@@ -24,8 +27,33 @@ export const FormCheckout = () => {
 	const cleanCart = useCartStore(state => state.cleanCart);
 	const cartItems = useCartStore(state => state.items);
 	const totalAmount = useCartStore(state => state.totalAmount);
+	
+	const [preferenceId, setPreferenceId] = useState(null); 
+
+	const handlePurchase = async (orderId: number) => {
+		try {
+			const items = cartItems.map(item => ({
+				title: item.name,
+				quantity: Number(item.quantity),
+				unit_price: Number(item.price)
+			}));
+
+			const response = await purchaseTicket(items, orderId);
+
+			if (response.id) {
+				console.log(response.id);
+				setPreferenceId(response.id);
+			} else {
+				console.error("No se recibió un ID de preferencia válido:", response);
+			}
+		} catch (error) {
+			console.error("Error purchasing ticket:", error);
+		}
+	}
 
 	const onSubmit = handleSubmit(data => {
+		
+		// Creamos la orden
 		const orderInput = {
 			address: data,
 			cartItems: cartItems.map(item => ({
@@ -37,10 +65,13 @@ export const FormCheckout = () => {
 		};
 
 		createOrder(orderInput, {
-			onSuccess: () => {
-				cleanCart();
-			},
+		onSuccess: (data) => {
+			const orderId = data.id;
+			handlePurchase(orderId); // Flujo del pago
+			//cleanCart();
+		},
 		});
+
 	});
 
 	if (isPending) {
@@ -102,7 +133,7 @@ export const FormCheckout = () => {
 						className='border border-slate-200 rounded-md p-3'
 						{...register('country')}
 					>
-						<option value='Ecuador'>Ecuador</option>
+						<option value='Ecuador'>Argentina</option>
 					</select>
 				</div>
 
@@ -115,24 +146,8 @@ export const FormCheckout = () => {
 					</div>
 				</div>
 
-				<div className='flex flex-col'>
-					<div className='flex justify-between items-center text-sm border border-slate-600 bg-stone-100 py-4 rounded-ss-md rounded-se-md px-6'>
-						<span>Depósito Bancario</span>
-					</div>
+				{/* DIV DE MERCADOPAGO */}
 
-					<div className='bg-stone-100 text-[13px] p-5 space-y-0.5 border border-gray-200 rounded-es-md rounded-ee-md'>
-						<p>Compra a traves de transferencia bancaria</p>
-						<p>BANCO PICHINCHA</p>
-						<p>Razón Social: CelularesBaratos</p>
-						<p>RUC: 123456789000</p>
-						<p>Tipo de cuenta: Corriente</p>
-						<p>Número de cuenta: 1234567890</p>
-						<p>
-							La información será compartida nuevamente una vez que se
-							haya finalizado la compra
-						</p>
-					</div>
-				</div>
 
 				<div className='flex flex-col gap-6'>
 					<h3 className='font-semibold text-3xl'>
@@ -148,6 +163,7 @@ export const FormCheckout = () => {
 				>
 					Finalizar Pedido
 				</button>
+				{preferenceId && <Wallet initialization={{ preferenceId: preferenceId }}/>}
 			</form>
 		</div>
 	);
