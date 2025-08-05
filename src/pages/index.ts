@@ -8,3 +8,6 @@ export * from './ConfirmEmailPage';
 export * from './CheckoutPage';
 export * from './ThankyouPage';
 export * from './OrderUserPage';
+
+// DASHBOARD
+export * from './dashboard/DashboardProductsPage';

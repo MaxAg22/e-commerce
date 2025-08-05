@@ -4,6 +4,8 @@
 // y no haya problemas de navegación.   
 
 import {
+	FaBoxOpen,
+	FaCartShopping,
 	FaFacebookF,
 	FaInstagram,
 	FaTiktok,
@@ -55,3 +57,19 @@ export const socialLinks = [
 		icon: <FaTiktok />,
 	},
 ];
+
+export const dashboardLinks = [
+	{
+		id: 1,
+		title: 'Productos',
+		href: '/dashboard/productos',
+		icon: <FaBoxOpen size={25}/>,
+	},	
+	{
+		id: 2,
+		title: 'Ordenes',
+		href: '/dashboard/ordenes',
+		icon: <FaCartShopping size={25}/>,
+	},
+
+]

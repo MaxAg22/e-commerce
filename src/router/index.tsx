@@ -11,9 +11,11 @@ import {
     ConfirmEmailPage, 
     CheckoutPage, 
     OrderUserPage, 
-    ThankyouPage 
+    ThankyouPage, 
+    DashboardProductsPage
 } from "../pages";
 import { ProductPage } from "../pages/ProductPage";
+import { DashboardLayout } from "../layouts/DashboardLayout";
 
 
 /*
@@ -80,5 +82,19 @@ export const router = createBrowserRouter([
     {
         path: '/checkout/:id/thank-you',
         element: <ThankyouPage />,
+    },
+    {
+        path: '/dashboard',
+        element: <DashboardLayout />,
+        children: [
+            {
+                index: true,
+                element: <Navigate to='/dashboard/productos' />,
+            },
+            {
+                path: 'productos',
+                element: <DashboardProductsPage />,
+            }
+        ]
     }
 ]);
