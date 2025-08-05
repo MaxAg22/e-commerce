@@ -1,3 +1,4 @@
+import { create } from 'zustand';
 import type { OrderInput } from '../interfaces';
 import { supabase } from '../supabase/client';
 
@@ -212,6 +213,7 @@ export const getOrderById = async (orderId: number) => {
 		},
 		totalAmount: order.total_amount,
 		status: order.status,
+		created_at: order.created_at,
 		address: {
 			addressLine1: order.addresses?.address_line1,
 			addressLine2: order.addresses?.address_line2,

@@ -14,7 +14,7 @@ import { Logo } from './Logo';
 import { useGlobalStore } from '../../store/global.store';
 import { useCartStore } from '../../store/cart.store';
 import { LuLoader } from 'react-icons/lu';
-import { useUser } from '../../hooks';
+import { useCustomer, useUser } from '../../hooks';
 
 export const Navbar = () => {
 
@@ -26,6 +26,7 @@ export const Navbar = () => {
 	const { session, isLoading } = useUser();
 
 	const userId = session?.user.id;
+	const { data: customer } = useCustomer(userId!);
 
 
 	return (
@@ -70,7 +71,7 @@ export const Navbar = () => {
 								to='/account/pedidos'
 								className='border-2 border-slate-700 w-9 h-9 rounded-full grid place-items-center text-lg font-bold'
 							>
-								R
+								{customer && customer.full_name[0]}
 							</Link>
 						</div>
 					) : (

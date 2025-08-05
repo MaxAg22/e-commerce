@@ -1,5 +1,6 @@
 // Funciones de login y register que interactuan directamente con supabase
 
+import { use } from 'react';
 import { supabase } from '../supabase/client';
 
 interface IAuthLogin {
@@ -124,6 +125,21 @@ export const getSession = async () => {
 	if (error) {
 		console.log(error);
 		throw new Error('Error al obtener la sesión');
+	}
+
+	return data;
+};
+
+export const getUserData = async(userId: string) => {
+	const { data, error } = await supabase
+	.from('customers')
+	.select('*')
+	.eq('user_id', userId)
+	.single();
+
+	if (error) {
+		console.log(error);
+		throw new Error('Error al obtener los datos del usuario');
 	}
 
 	return data;
