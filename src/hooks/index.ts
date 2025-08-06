@@ -2,6 +2,10 @@
 export * from './products/useProducts';
 export * from './products/useFIlteredProducts';
 export * from './products/useHomeProducts';
+export * from './products/useProduct';
+export * from './products/useCreateProduct';
+export * from './products/useDeleteProduct';
+export * from './products/useUpdateProduct';
 
 // AUTH
 export * from './auth/useLogin';
