@@ -14,7 +14,9 @@ import {
     ThankyouPage, 
     DashboardProductsPage,
     DashboardNewProductPage,
-    DashboardProductSlugPage
+    DashboardProductSlugPage,
+    DashboardOrdersPage,
+    DashboardOrderPage
 } from "../pages";
 import { ProductPage } from "../pages/ProductPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
@@ -104,7 +106,16 @@ export const router = createBrowserRouter([
             {
                 path: 'productos/editar/:slug',
                 element: <DashboardProductSlugPage />,
+            },
+            {
+                path: 'ordenes',
+                element: <DashboardOrdersPage />,
+            },
+            {
+                path: 'ordenes/:id',
+                element: <DashboardOrderPage />,
             }
+            
         ]
     }
 ]);
