@@ -1,6 +1,4 @@
 // Funciones de login y register que interactuan directamente con supabase
-
-import { use } from 'react';
 import { supabase } from '../supabase/client';
 
 interface IAuthLogin {
@@ -143,4 +141,19 @@ export const getUserData = async(userId: string) => {
 	}
 
 	return data;
+};
+
+export const getUserRole = async (userId: string) => {
+	const { data, error } = await supabase
+		.from('user_roles')
+		.select('role')
+		.eq('user_id', userId)
+		.single();
+
+	if (error) {
+		console.log(error);
+		throw new Error('Error al obtener el rol del usuario');
+	}
+
+	return data.role;
 };
