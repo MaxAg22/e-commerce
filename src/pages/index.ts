@@ -8,6 +8,8 @@ export * from './ConfirmEmailPage';
 export * from './CheckoutPage';
 export * from './ThankyouPage';
 export * from './OrderUserPage';
+export * from './FailurePage';
+export * from './PendingPage';
 
 // DASHBOARD
 export * from './dashboard/DashboardProductsPage';

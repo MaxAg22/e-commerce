@@ -5,11 +5,15 @@ import { CiCircleCheck } from 'react-icons/ci';
 import { formatPrice } from '../helpers';
 import { useEffect } from 'react';
 import { supabase } from '../supabase/client';
+import { useCartStore } from '../store/cart.store';
 
 export const ThankyouPage = () => {
 	const { id } = useParams<{ id: string }>();
 
-	const { data, isLoading, isError } = useOrder(Number(id));
+	//! FIX!!! id es un string con letras
+	const { data, isLoading, isError } = useOrder(id);
+
+	const cleanCart = useCartStore(state => state.cleanCart);
 
 	// Autenticar
 	const { isLoading: isLoadingSession } = useUser();
@@ -24,6 +28,11 @@ export const ThankyouPage = () => {
 		});
 	}, [navigate]);
 
+	useEffect(() => {
+		// Limpia el carrito solo cuando el pago fue exitoso
+		cleanCart();
+	}, [cleanCart]);
+
 	if (isError) return <div>Error al cargar la orden</div>;
 
 	if (isLoading || !data || isLoadingSession) return <Loader />;
@@ -36,8 +45,8 @@ export const ThankyouPage = () => {
 					className='text-4xl font-bold self-center tracking-tighter transition-all md:text-5xl'
 				>
 					<p>
-						Celulares
-						<span className='text-cyan-600'>Baratos</span>
+						Solange
+						<span className='text-pink-400'>Accesorios</span>
 					</p>
 				</Link>
 			</header>
@@ -55,23 +64,7 @@ export const ThankyouPage = () => {
 					<h3 className='font-medium'>Tu pedido está confirmado</h3>
 
 					<p className='text-sm'>
-						Gracias por realizar tu compra en Celularesbaratos. Para
-						realizar la transferencia te compartimos los siguientes
-						datos
-					</p>
-
-					<div className='space-y-0.5 text-sm'>
-						<p>BANCO PICHINCHA</p>
-						<p>Razón Social: CelularesBaratos</p>
-						<p>RUC: 123456789000</p>
-						<p>Tipo de cuenta: Corriente</p>
-						<p>Número de cuenta: 1234567890</p>
-					</div>
-
-					<p className='text-sm'>
-						Una vez realizada la transferencia, comparte tu
-						comprobante a ventas@celularesbaratos.com para procesarla
-						y hacerte la entrega de tu dispositivo a domicilio.
+						Gracias por realizar tu compra en SolangeAccesorios.
 					</p>
 				</div>
 
@@ -132,7 +125,7 @@ export const ThankyouPage = () => {
 						<div className='flex flex-col text-sm'>
 							<p className='font-semibold'>Métodos de pago:</p>
 							<p>
-								Deposito bancario - {formatPrice(data.totalAmount)}
+								Mercado Pago - {formatPrice(data.totalAmount)}
 							</p>
 						</div>
 

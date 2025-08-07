@@ -1,4 +1,4 @@
-export const purchaseTicket = async (items: any[], orderId: number) => {
+export const purchaseTicket = async (items: any[], orderId: string) => {
     try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/mercadopago/preference`, {
             method: "POST",

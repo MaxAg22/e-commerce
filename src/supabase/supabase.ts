@@ -114,7 +114,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          order_id: number
+          order_id: string
           price: number
           quantity: number
           variant_id: string
@@ -122,7 +122,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          order_id: number
+          order_id: string
           price: number
           quantity: number
           variant_id: string
@@ -130,7 +130,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          order_id?: number
+          order_id?: string
           price?: number
           quantity?: number
           variant_id?: string
@@ -157,8 +157,9 @@ export type Database = {
           address_id: string
           created_at: string
           customer_id: string
-          id: number
-          payment_status: string | null
+          expires_at: string
+          id: string
+          payment_status: string
           status: string
           total_amount: number
         }
@@ -166,17 +167,19 @@ export type Database = {
           address_id: string
           created_at?: string
           customer_id: string
-          id?: number
-          payment_status?: string | null
-          status?: string
+          expires_at: string
+          id?: string
+          payment_status: string
+          status: string
           total_amount: number
         }
         Update: {
           address_id?: string
           created_at?: string
           customer_id?: string
-          id?: number
-          payment_status?: string | null
+          expires_at?: string
+          id?: string
+          payment_status?: string
           status?: string
           total_amount?: number
         }
@@ -291,7 +294,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_order: {
+        Args: { p_user_id: string; p_order: Json }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

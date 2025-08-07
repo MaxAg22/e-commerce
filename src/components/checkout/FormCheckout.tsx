@@ -9,9 +9,9 @@ import { ItemsCheckout } from './ItemsCheckout';
 import { useCreateOrder } from '../../hooks';
 import { useCartStore } from '../../store/cart.store';
 import { ImSpinner2 } from 'react-icons/im';
-import { purchaseTicket } from '../../actions/purchaseTicket';
 import { Wallet } from '@mercadopago/sdk-react';
 import { useState } from 'react';
+import { usePurchaseTicket } from '../../hooks/payments/usePurchaseTicket';
 
 export const FormCheckout = () => {
 	const {
@@ -23,37 +23,20 @@ export const FormCheckout = () => {
 	});
 
 	const { mutate: createOrder, isPending } = useCreateOrder();
+	const { mutate: purchaseTicket, isPending: isPendingTicket } = usePurchaseTicket();
 
-	const cleanCart = useCartStore(state => state.cleanCart);
+
 	const cartItems = useCartStore(state => state.items);
 	const totalAmount = useCartStore(state => state.totalAmount);
 	
 	const [preferenceId, setPreferenceId] = useState(null); 
+	const [submitButton, setSubmitButton] = useState(false);
 
-	const handlePurchase = async (orderId: number) => {
-		try {
-			const items = cartItems.map(item => ({
-				title: item.name,
-				quantity: Number(item.quantity),
-				unit_price: Number(item.price)
-			}));
-
-			const response = await purchaseTicket(items, orderId);
-
-			if (response.id) {
-				console.log(response.id);
-				setPreferenceId(response.id);
-			} else {
-				console.error("No se recibió un ID de preferencia válido:", response);
-			}
-		} catch (error) {
-			console.error("Error purchasing ticket:", error);
-		}
-	}
-
+	// Se crea la orden (pendiente de pago)
 	const onSubmit = handleSubmit(data => {
 		
-		// Creamos la orden
+		setSubmitButton(true);
+
 		const orderInput = {
 			address: data,
 			cartItems: cartItems.map(item => ({
@@ -65,16 +48,32 @@ export const FormCheckout = () => {
 		};
 
 		createOrder(orderInput, {
-		onSuccess: (data) => {
-			const orderId = data.id;
-			handlePurchase(orderId); // Flujo del pago
-			//cleanCart();
-		},
+			onSuccess: (orderId) => {
+				// Redirecciona la logica al pago
+				handlePurchase(orderId);	
+			},
 		});
-
 	});
 
-	if (isPending) {
+	// Se crea la preferencia
+	const handlePurchase = async (orderId: string) => {
+		
+		const items = cartItems.map(item => ({
+			title: item.name,
+			quantity: Number(item.quantity),
+			unit_price: Number(item.price)
+		}));
+
+		purchaseTicket({ items, orderId }, {
+			onSuccess: (response) => {
+				setPreferenceId(response.id);
+			},
+			onError: () => 
+				console.error("No se recibió un ID de preferencia válido"),
+		});
+	}
+
+	if (isPending || isPendingTicket) {
 		return (
 			<div className='flex flex-col gap-3 h-screen items-center justify-center'>
 				<ImSpinner2 className='animate-spin h-10 w-10' />
@@ -133,7 +132,7 @@ export const FormCheckout = () => {
 						className='border border-slate-200 rounded-md p-3'
 						{...register('country')}
 					>
-						<option value='Ecuador'>Argentina</option>
+						<option value='Argentina'>Argentina</option>
 					</select>
 				</div>
 
@@ -146,8 +145,22 @@ export const FormCheckout = () => {
 					</div>
 				</div>
 
-				{/* DIV DE MERCADOPAGO */}
+				{/* En este div se especifica un unico metodo de pago (mercado pago) y ademas 
+				si no se acredita el pago en 24hs la orden de compra sera cancelada */}
+				<div className='flex flex-col gap-3'>
+					<p className='text-sm font-medium'>Métodos de pago</p>
 
+					<div className='flex justify-between items-center text-sm border border-slate-600 bg-stone-100 py-4 rounded-md px-6'>
+						<span className='font-normal'>Mercado Pago</span>
+						<span className='font-semibold'>Pago con tarjeta de crédito o débito</span>
+					</div>
+
+					<div className='text-xs text-red-500'>
+						<p>
+							Si no se acredita el pago en 24 horas, la orden de compra será cancelada.
+						</p>
+					</div>
+				</div>
 
 				<div className='flex flex-col gap-6'>
 					<h3 className='font-semibold text-3xl'>
@@ -157,12 +170,16 @@ export const FormCheckout = () => {
 					<ItemsCheckout />
 				</div>
 
-				<button
-					type='submit'
-					className='bg-black text-white py-3.5 font-bold tracking-wide rounded-md mt-2'
-				>
-					Finalizar Pedido
-				</button>
+						
+				{!submitButton && (
+					<button
+						type='submit'
+						className='bg-black text-white py-3.5 font-bold tracking-wide rounded-md mt-2 submit_button'
+					>
+						Finalizar Pedido
+					</button>
+				)}
+					
 				{preferenceId && <Wallet initialization={{ preferenceId: preferenceId }}/>}
 			</form>
 		</div>
